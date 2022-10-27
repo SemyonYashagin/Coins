@@ -32,10 +32,10 @@ namespace Coins
                 for (int i = 0; i < n; i++)
                 {
                     string s = Console.Read().ToString();
-                    //int.TryParse(Console.Read().ToString(), out x1);
-                    //int.TryParse(Console.Read().ToString(), out y1);
-                    //int.TryParse(Console.Read().ToString(), out x2);
-                    //int.TryParse(Console.Read().ToString(), out y2);
+                    int.TryParse(Console.Read().ToString(), out x1);
+                    int.TryParse(Console.Read().ToString(), out y1);
+                    int.TryParse(Console.Read().ToString(), out x2);
+                    int.TryParse(Console.Read().ToString(), out y2);
 
                     list[i] = new Country(s, x1, y1, x2, y2);
                     init(grid, list[i], i, n);

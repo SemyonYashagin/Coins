@@ -1,0 +1,8 @@
+C:\Users\yashagin.s\source\repos\Coins\Coins\obj\Debug\Coins.csproj.AssemblyReference.cache
+C:\Users\yashagin.s\source\repos\Coins\Coins\obj\Debug\Coins.csproj.SuggestedBindingRedirects.cache
+C:\Users\yashagin.s\source\repos\Coins\Coins\obj\Debug\Coins.csproj.CoreCompileInputs.cache
+C:\Users\yashagin.s\source\repos\Coins\Coins\bin\Debug\Coins.exe.config
+C:\Users\yashagin.s\source\repos\Coins\Coins\bin\Debug\Coins.exe
+C:\Users\yashagin.s\source\repos\Coins\Coins\bin\Debug\Coins.pdb
+C:\Users\yashagin.s\source\repos\Coins\Coins\obj\Debug\Coins.exe
+C:\Users\yashagin.s\source\repos\Coins\Coins\obj\Debug\Coins.pdb

@@ -12,11 +12,11 @@ namespace Coins
         public static int day;
         public static int n; //the count of countries
         public static int[] dx = { 0, -1, 1, 0 };
-        public static int[] dy = { -1, 0, 0, -1 };
+        public static int[] dy = { -1, 0, 0, 1 };
         static void Main(string[] args)
         {
 
-            n = int.Parse(Console.ReadLine()); //the number of countries
+            int.TryParse(Console.ReadLine(), out n); //the number of countries
             int count = 1; // count of a case
 
             while (n!=0)
@@ -31,11 +31,13 @@ namespace Coins
 
                 for (int i = 0; i < n; i++)
                 {
-                    string s = Console.Read().ToString();
-                    int.TryParse(Console.Read().ToString(), out x1);
-                    int.TryParse(Console.Read().ToString(), out y1);
-                    int.TryParse(Console.Read().ToString(), out x2);
-                    int.TryParse(Console.Read().ToString(), out y2);
+                    string[] str = Console.ReadLine().ToString().Split(' ');
+                    //Char.TryParse(Console.Read().ToString(), out x1);
+                    string s = str[0];
+                    int.TryParse(str[1], out x1);
+                    int.TryParse(str[2], out y1);
+                    int.TryParse(str[3], out x2);
+                    int.TryParse(str[4], out y2);
 
                     list[i] = new Country(s, x1, y1, x2, y2);
                     init(grid, list[i], i, n);
@@ -55,16 +57,18 @@ namespace Coins
                     day++;
                 }
 
-                Array.Sort(list);
+                //Array.Sort(list);
                 Console.WriteLine("Case Number " + count);
                 for (int i = 0; i < n; i++)
                     Console.WriteLine(list[i]);
+
+                count++;
+                int.TryParse(Console.ReadLine(), out n); // repeat the input
             }
         }
 
         public static void updateStatus(City[,] grid, Country[] list)
         {
-
             // First update completion dates per city, then check if countries are complete.
             for (int i = 0; i < n; i++)
             {

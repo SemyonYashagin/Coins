@@ -21,13 +21,13 @@ namespace Coins
                 Console.WriteLine("the \"n\" should be the number");
             }
             
-            if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
             int count = 1; // count of a case
 
             //while an user don't input n = 0 
             while (n!=0)
             {
-                int x1, x2,y1, y2;// city's coordinates
+                if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
+                int x1 = 0, x2 = 0, y1 = 0, y2 = 0;// city's coordinates
                 Country[] list = new Country[n];
                 City[,] grid = new City[11,11]; //11x11 - is maximum of cities
 
@@ -73,7 +73,7 @@ namespace Coins
             // Update data of a city, then check if country are complete or not
             for (int i = 0; i < n; i++)
             {
-                list[i].Update(grid, day);
+                list[i].Update(grid, day);//update city status (finishArray)
                 list[i].isCountryCompleted();
             }
         }
@@ -101,7 +101,7 @@ namespace Coins
                         // Calculate how many coins shall go to neighbors
                         int[] move = new int[n];
                         for (int k = 0; k < n; k++)
-                            move[k] = grid[i,j].coins[k] / 1000;
+                            move[k] = grid[i,j].coins[k] / 1000; // 1/1000 part have to send to a neighbors
 
                         // Move coins to neighbors
                         int numNeighbors = 0;
@@ -109,7 +109,7 @@ namespace Coins
                         {
                             int myx = i + dx[k];//the x coord of the neighbor
                             int myy = j + dy[k];//the y coord of the neighbor
-                            if (InBounds(myx, myy) && grid[myx,myy] != null)
+                            if (InGrid(myx, myy) && grid[myx,myy] != null)
                             {
                                 numNeighbors++;
                                 for (int z = 0; z < n; z++)
@@ -119,14 +119,14 @@ namespace Coins
 
                         // Update coins for neighbor
                         for (int k = 0; k < n; k++)
-                            next[i,j].coins[k] += (grid[i,j].coins[k] - numNeighbors * move[k]);// - how many coins we sent to others
+                            next[i,j].coins[k] += (grid[i,j].coins[k] - numNeighbors * move[k]);// - how many coins we sent to others, grid - the last grid, next - the current grid
                     }
                 }
             }
             return next;
         }
-        //return true if a neighbor (city) not out of gri
-        public static bool InBounds(int x, int y)
+        //return true if a neighbor (city) not out of grid
+        public static bool InGrid(int x, int y)
         {
             return 0 <= x && x < 11 && 0 <= y && y < 11;
         }

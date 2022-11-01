@@ -32,7 +32,7 @@ namespace Coins
                 }
             }
         }
-        public void isCountryCompleted()
+        public void isCountryCompleted()//if the finishArray don't contains -1 values this array is completed (country completed)
         {
             int max = 0;
             for (int i = 0; i < finishArray.GetLength(0); i++) //circling of all cities in the country
@@ -40,20 +40,20 @@ namespace Coins
                 for (int j = 0; j < finishArray.GetLength(1); j++)
                 {
 
-                    if (finishArray[i,j] == -1) 
-                        return;
+                    if (finishArray[i,j] == -1) //if only one city isn't completed
+                        return;//exit
                     else 
                         max = Math.Max(max, finishArray[i,j]);
                 }
             }
             numberOfDays = max;
         }
-        public void Update(City[,] city, int day)
+        public void Update(City[,] city, int day)//update finishArray
         {
             for (int i = 0; i < finishArray.GetLength(0); i++)
                 for (int j = 0; j < finishArray.GetLength(1); j++)
-                    if (finishArray[i,j] == -1 && city[x1 + i,y1 + j].isDone())
-                        finishArray[i,j] = day;
+                    if (finishArray[i,j] == -1 && city[x1 + i,y1 + j].isDone())//if in the current city there are all coins[i] exist 
+                        finishArray[i,j] = day;//then this city is completed
         }
         public bool isComplete()//the county is comlete or not
         {

@@ -30,7 +30,7 @@ namespace Coins
             coins = new int[n];
         }
 
-        public bool isDone()
+        public bool isDone()// check! if all coins in not null returns true, else false
         {
             for (int i = 0; i < n; i++)
                 if (coins[i] == 0)

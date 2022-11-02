@@ -27,7 +27,7 @@ namespace Coins
                     foreach (InputData line in inputData)
                     {
                         int k = 0;
-                        n = line.n;
+                        n = line.N;
 
                         if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
                         list = new Country[n];                        
@@ -38,7 +38,7 @@ namespace Coins
 
                         foreach (CountryData country in line.Countries)
                         {
-                            list[k] = new Country(country.Name, country.x1, country.y1, country.x2, country.y2);//the array of countries
+                            list[k] = new Country(country.name, country.X1, country.Y1, country.X2, country.Y2);//the array of countries
                             Init(grid, list[k], k, n);
                             k++;
                         }
@@ -66,7 +66,7 @@ namespace Coins
                 }
                 else
                 {
-                    Console.WriteLine("input.txt is invalid. Check it.");
+                    Console.WriteLine("input.txt file is empty or doesn't exist. Check it.");
                     Console.ReadLine();
                 }
             }
@@ -187,23 +187,23 @@ namespace Coins
                     using (StreamReader reader = new StreamReader(inputFilePath))
                     {
                         string line = reader.ReadLine();
-                        while (line != "0" && line!= null)
+                        while (line != "0")
                         {
                             InputData data = new InputData
                             {
-                                n = Convert.ToInt32(line),
+                                N = Convert.ToInt32(line),
                                 Countries = new List<CountryData> { }
                             };
-                            for (int i = 0; i < data.n; i++)
+                            for (int i = 0; i < data.N; i++)
                             {
                                 string[] str = reader.ReadLine().Split(' ');
                                 CountryData countryData = new CountryData
                                 {
-                                    Name = str[0],
-                                    x1 = Convert.ToInt32(str[1]),
-                                    y1 = Convert.ToInt32(str[2]),
-                                    x2 = Convert.ToInt32(str[3]),
-                                    y2 = Convert.ToInt32(str[4])
+                                    name = str[0],
+                                    X1 = Convert.ToInt32(str[1]),
+                                    Y1 = Convert.ToInt32(str[2]),
+                                    X2 = Convert.ToInt32(str[3]),
+                                    Y2 = Convert.ToInt32(str[4])
                                 };
                                 data.Countries.Add(countryData);
                             }

@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,57 +20,66 @@ namespace Coins
         public static int[] dx = { 0, -1, 1, 0 };// on "x" coordinate for moving coins to neighbor
         public static int[] dy = { -1, 0, 0, 1 };// on "y" coordinate for moving coins to neighbor
         static void Main(string[] args)
-        {   
-            Console.WriteLine("Input the number of countries \"n\" (1<=n<=20): ");            
-            while(!int.TryParse(Console.ReadLine(), out n)) //the number of countries
+        {
+            try
             {
-                Console.WriteLine("the \"n\" should be the number");
+                string outputData = "";
+                List<InputData> inputData = ParseDataFromInputFile();
+
+                if (isFileExist() && inputData.Count != 0)
+                {
+                    foreach (InputData line in inputData)
+                    {
+                        int count = 1; // count of a case
+                        int k = 0;
+                        n = line.n;
+
+                        if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
+                        Country[] list = new Country[n];
+                        City[,] grid = new City[11, 11]; //11x11 - is maximum of cities
+
+                        for (int i = 0; i < 11; i++)
+                            for (int j = 0; j < 11; j++)
+                                grid[i, j] = null;
+
+                        foreach (CountryData country in line.Countries)
+                        {
+                            list[k] = new Country(country.Name, country.x1, country.y1, country.x2, country.y2);//the array of countries
+                            Init(grid, list[k], k, n);
+                            k++;
+                        }
+
+                        // Do this while the countries isn't completed
+                        while (!Done(list))
+                        {
+                            grid = TransferCoins(grid);
+                            UpdateStatus(grid, list);
+                            day++;
+                        }
+
+                        // need to fix a sorting of array
+                        Array.Sort(list);
+                        outputData += "Case Number " + count + "\n";
+                        for (int i = 0; i < n; i++)
+                            outputData += list[i].ToString() + "\n";
+
+                        count++;
+                    }
+
+                    WriteDataIntoOutputFile(outputData);
+                    Console.WriteLine("All right!!!\nThe data insert into output.txt file");
+                    Console.ReadLine();
+                }
+                else
+                {
+                    Console.WriteLine("input.txt is invalid. Check it.");
+                    Console.ReadLine();
+                }
             }
-            
-            int count = 1; // count of a case
-
-            //while an user don't input n = 0 
-            while (n!=0)
+            catch (Exception ex)
             {
-                if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
-                int x1 = 0, x2 = 0, y1 = 0, y2 = 0;// city's coordinates
-                Country[] list = new Country[n];
-                City[,] grid = new City[11,11]; //11x11 - is maximum of cities
-
-                for (int i = 0; i < 11; i++)
-                    for (int j = 0; j < 11; j++)
-                        grid[i, j] = null;
-
-                for (int i = 0; i < n; i++)
-                {
-                    //parsing the values s, x1,y1,x2,y2
-                    string[] str = Console.ReadLine().ToString().Split(' ');
-                    string s = str[0];
-                    int.TryParse(str[1], out x1);
-                    int.TryParse(str[2], out y1);
-                    int.TryParse(str[3], out x2);
-                    int.TryParse(str[4], out y2);
-
-                    list[i] = new Country(s, x1, y1, x2, y2);//the array of countries
-                    Init(grid, list[i], i, n);
-                }
-
-                // Do this while the countries isn't completed
-                while (!Done(list))
-                {
-                    grid = TransferCoins(grid);
-                    UpdateStatus(grid, list);
-                    day++;
-                }
-
-                // need to fix a sorting of array
-                Array.Sort(list);
-                Console.WriteLine("Case Number " + count);
-                for (int i = 0; i < n; i++)
-                    Console.WriteLine(list[i].ToString());
-
-                count++;
-                int.TryParse(Console.ReadLine(), out n); // repeat the input
+                Console.WriteLine("The format of input.txt file isn't correct\n"+ex.Message);
+                Console.ReadLine();
             }
         }
 
@@ -125,6 +140,7 @@ namespace Coins
             }
             return next;
         }
+
         //return true if a neighbor (city) not out of grid
         public static bool InGrid(int x, int y)
         {
@@ -146,6 +162,76 @@ namespace Coins
                 if (!list[i].isComplete())
                     return false;
             return true;
+        }
+
+        public static void WriteDataIntoOutputFile(string data)
+        {
+            string currentDirectory = Directory.GetParent(Environment.CurrentDirectory.ToString()).Parent.FullName;
+            string outputFilePath = Path.Combine(currentDirectory, "data\\output.txt");
+            
+            if (File.Exists(outputFilePath))
+                File.Delete(outputFilePath);
+
+            using (FileStream fs = File.Create(outputFilePath))
+            {
+                Byte[] output = new UTF8Encoding(true).GetBytes(data);
+                fs.Write(output, 0, output.Length);
+            }
+        }
+
+        public static List<InputData> ParseDataFromInputFile()
+        {
+            List<InputData> list = new List<InputData>();
+            if(isFileExist())
+            {
+                try
+                {
+                    string currentDirectory = Directory.GetParent(Environment.CurrentDirectory.ToString()).Parent.FullName;
+                    string inputFilePath = Path.Combine(currentDirectory, "data\\input.txt");
+
+                    using (StreamReader reader = new StreamReader(inputFilePath))
+                    {
+                        string line = reader.ReadLine();
+                        while (line != "0" && line!= null)
+                        {
+                            InputData data = new InputData
+                            {
+                                n = Convert.ToInt32(line),
+                                Countries = new List<CountryData> { }
+                            };
+                            for (int i = 0; i < data.n; i++)
+                            {
+                                string[] str = reader.ReadLine().Split(' ');
+                                CountryData countryData = new CountryData
+                                {
+                                    Name = str[0],
+                                    x1 = Convert.ToInt32(str[1]),
+                                    y1 = Convert.ToInt32(str[2]),
+                                    x2 = Convert.ToInt32(str[3]),
+                                    y2 = Convert.ToInt32(str[4])
+                                };
+                                data.Countries.Add(countryData);
+                            }
+                            list.Add(data);
+                            line = reader.ReadLine();
+                        }
+                    }
+                }
+                catch (Exception Ex)
+                {
+                    Console.WriteLine("Invalid input.txt file. Check it.\n" + Ex.Message);
+                    Console.ReadLine();
+                    list.Clear();
+                }
+            }           
+            return list;
+        }
+
+        public static bool isFileExist()
+        {
+            string currentDirectory = Directory.GetParent(Environment.CurrentDirectory.ToString()).Parent.FullName;
+            string inputFilePath = Path.Combine(currentDirectory, "data\\input.txt");           
+            return File.Exists(inputFilePath);
         }
     }
 }

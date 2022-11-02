@@ -24,15 +24,15 @@ namespace Coins
             y2 = yh;
             numberOfDays = maxValue;
             finishArray = new int[x2 - x1 + 1,y2 - y1 + 1]; // all elements are null (0)
-            for (int i = 0; i < finishArray.GetLength(0); i++)
+            for (int i = 0; i < finishArray.GetLength(0); i++) //circling of all cities in the country
             {
                 for (int j = 0; j < finishArray.GetLength(1); j++)
                 {
-                    finishArray[i, j] = -1;
+                    finishArray[i, j] = -1;//do it for n=1
                 }
             }
         }
-        public void isCountryCompleted()//if the finishArray don't contains -1 values this array is completed (country completed)
+        public void UpdateCompleted()//if the finishArray don't contains -1 values this array is completed (country completed)
         {
             int max = 0;
             for (int i = 0; i < finishArray.GetLength(0); i++) //circling of all cities in the country

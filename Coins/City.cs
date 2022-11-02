@@ -12,6 +12,7 @@ namespace Coins
         public int x;
         public int y;
         public int[] coins;
+        public bool isCompleted = false;
 
         public City(int numContries, int x, int y, int myCountry)//for the zero day
         {
@@ -32,9 +33,14 @@ namespace Coins
 
         public bool isDone()// check! if all coins in not null returns true, else false
         {
-            for (int i = 0; i < n; i++)
-                if (coins[i] == 0)
-                    return false;
+            if (!isCompleted)
+            {
+                for (int i = 0; i < n; i++)
+                    if (coins[i] == 0)
+                        return false;
+            }
+
+            isCompleted = true;
             return true;
         }
     }

@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Runtime.Remoting.Messaging;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Coins
 {
@@ -26,17 +19,18 @@ namespace Coins
                 string outputData = "";
                 List<InputData> inputData = ParseDataFromInputFile();
 
-                if (isFileExist() && inputData.Count != 0)
+                if (IsFileExist() && inputData.Count != 0)
                 {
+                    Country[] list;
+                    City[,] grid = new City[11, 11]; //11x11 - is maximum of cities
+                    int count = 1; // count of a case
                     foreach (InputData line in inputData)
                     {
-                        int count = 1; // count of a case
                         int k = 0;
                         n = line.n;
 
                         if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
-                        Country[] list = new Country[n];
-                        City[,] grid = new City[11, 11]; //11x11 - is maximum of cities
+                        list = new Country[n];                        
 
                         for (int i = 0; i < 11; i++)
                             for (int j = 0; j < 11; j++)
@@ -89,14 +83,16 @@ namespace Coins
             for (int i = 0; i < n; i++)
             {
                 list[i].Update(grid, day);//update city status (finishArray)
-                list[i].isCountryCompleted();
+                list[i].UpdateCompleted();
             }
         }
 
         public static City[,] TransferCoins(City[,] grid)
         {
-            // Save a new copy for the next day
+            int[] move = new int[n];
             City[,] next = new City[11,11];
+
+            // Save a new copy for the next day
             for (int i = 0; i < 11; i++)
             {
                 for (int j = 0; j < 11; j++)
@@ -114,7 +110,6 @@ namespace Coins
                     if (grid[i,j] != null)
                     {
                         // Calculate how many coins shall go to neighbors
-                        int[] move = new int[n];
                         for (int k = 0; k < n; k++)
                             move[k] = grid[i,j].coins[k] / 1000; // 1/1000 part have to send to a neighbors
 
@@ -182,7 +177,7 @@ namespace Coins
         public static List<InputData> ParseDataFromInputFile()
         {
             List<InputData> list = new List<InputData>();
-            if(isFileExist())
+            if(IsFileExist())
             {
                 try
                 {
@@ -227,7 +222,7 @@ namespace Coins
             return list;
         }
 
-        public static bool isFileExist()
+        public static bool IsFileExist()
         {
             string currentDirectory = Directory.GetParent(Environment.CurrentDirectory.ToString()).Parent.FullName;
             string inputFilePath = Path.Combine(currentDirectory, "data\\input.txt");           

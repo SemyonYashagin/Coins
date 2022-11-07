@@ -27,10 +27,10 @@ namespace Coins
                     foreach (InputData line in inputData)
                     {
                         int k = 0;
-                        n = line.N;
+                        n = Convert.ToInt32(line.N.val);
 
                         if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
-                        list = new Country[n];                        
+                        list = new Country[n];
 
                         for (int i = 0; i < 11; i++)
                             for (int j = 0; j < 11; j++)
@@ -38,7 +38,7 @@ namespace Coins
 
                         foreach (CountryData country in line.Countries)
                         {
-                            list[k] = new Country(country.name, country.X1, country.Y1, country.X2, country.Y2);//the array of countries
+                            list[k] = new Country(country.name, Convert.ToInt32(country.X1.val), Convert.ToInt32(country.Y1.val), Convert.ToInt32(country.X2.val), Convert.ToInt32(country.Y2.val));//the array of countries
                             Init(grid, list[k], k, n);
                             k++;
                         }
@@ -62,11 +62,6 @@ namespace Coins
 
                     WriteDataIntoOutputFile(outputData);
                     Console.WriteLine("All right!!!\nThe data insert into output.txt file");
-                    Console.ReadLine();
-                }
-                else
-                {
-                    Console.WriteLine("input.txt file is empty or doesn't exist. Check it.");
                     Console.ReadLine();
                 }
             }
@@ -176,39 +171,77 @@ namespace Coins
 
         public static List<InputData> ParseDataFromInputFile()
         {
+            int lineNumber = 0;
+            int x1 = 0, x2 = 0;
+            int y1 = 0, y2 = 0;
+            int countryNum = 0;
             List<InputData> list = new List<InputData>();
+
             if(IsFileExist())
             {
                 try
                 {
                     string currentDirectory = Directory.GetParent(Environment.CurrentDirectory.ToString()).Parent.FullName;
                     string inputFilePath = Path.Combine(currentDirectory, "data\\input.txt");
-
                     using (StreamReader reader = new StreamReader(inputFilePath))
                     {
                         string line = reader.ReadLine();
                         while (line != "0")
                         {
+                            lineNumber++;
                             InputData data = new InputData
                             {
-                                N = Convert.ToInt32(line),
+                                lineNumber = lineNumber,
+                                N = new Variable() { isValid = int.TryParse(line, out countryNum) , val = line },
                                 Countries = new List<CountryData> { }
                             };
-                            for (int i = 0; i < data.N; i++)
+
+                            for (int i = 0; i < Convert.ToInt32(data.N.val); i++)
                             {
-                                string[] str = reader.ReadLine().Split(' ');
+                                string stLine = reader.ReadLine();
+                                if (stLine == null)
+                                {
+                                    throw new IndexOutOfRangeException(
+                                        "In the end of the file you should type \"0\" symbol" +
+                                        $"\nError line number is {lineNumber+1}");
+                                }
+
+                                string[] str = stLine.Split(' ');
+                                if (str.Length == 1)
+                                    throw new IndexOutOfRangeException(
+                                        $"Country count \"{Convert.ToInt32(data.N.val)}\" don't equals to the number of countries at the bottom of the error line"
+                                        + $"\nError line number is {lineNumber-i}");
+                                lineNumber++;
+                                if (str.Length >= 2 && str.Length <= 4)
+                                    throw new IndexOutOfRangeException(
+                                        $"The country (\"{str[0]}\") doesn't have 4 coordinates. Please type them all."
+                                        + $"\nError line number is {lineNumber}");
+                                if (str.Length >= 6)
+                                    throw new IndexOutOfRangeException(
+                                        $"The country (\"{str[0]}\") have more than 4 coordinates. Please type only 4."
+                                        + $"\nError line number is {lineNumber}");
                                 CountryData countryData = new CountryData
                                 {
+                                    lineNumber = lineNumber,
                                     name = str[0],
-                                    X1 = Convert.ToInt32(str[1]),
-                                    Y1 = Convert.ToInt32(str[2]),
-                                    X2 = Convert.ToInt32(str[3]),
-                                    Y2 = Convert.ToInt32(str[4])
+                                    X1 = new Variable() { isValid = int.TryParse(str[1], out x1), val = str[1] },
+                                    Y1 = new Variable() { isValid = int.TryParse(str[2], out y1), val = str[2] },
+                                    X2 = new Variable() { isValid = int.TryParse(str[3], out x2), val = str[3] },
+                                    Y2 = new Variable() { isValid = int.TryParse(str[4], out y2), val = str[4] }
                                 };
                                 data.Countries.Add(countryData);
                             }
+
                             list.Add(data);
                             line = reader.ReadLine();
+                            if (line == null)
+                                throw new IndexOutOfRangeException(
+                                    "In the end of the file you should type \"0\" symbol" +
+                                    $"\nError line number is {lineNumber + 1}");
+                            if (!int.TryParse(line, out countryNum))
+                                throw new IndexOutOfRangeException(
+                                    $"Country count \"{Convert.ToInt32(data.N.val)}\" don't equals to the number of countries at the bottom of the error line"
+                                    + $"\nError line number is {lineNumber - Convert.ToInt32(data.N.val)}");
                         }
                     }
                 }

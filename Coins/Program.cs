@@ -19,6 +19,9 @@ namespace Coins
                 string outputData = "";
                 List<InputData> inputData = ParseDataFromInputFile();
 
+                if (!IsFileExist())
+                    throw new FileNotFoundException("Error: input.txt file not found");
+                
                 if (IsFileExist() && inputData.Count != 0)
                 {
                     Country[] list;
@@ -67,7 +70,7 @@ namespace Coins
             }
             catch (Exception ex)
             {
-                Console.WriteLine("The format of input.txt file isn't correct\n"+ex.Message);
+                Console.WriteLine("The format of input.txt file isn't correct\n" + ex.Message);
                 Console.ReadLine();
             }
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-
 namespace Coins
 {
     public class Program
@@ -30,7 +29,7 @@ namespace Coins
                     foreach (InputData line in inputData)
                     {
                         int k = 0;
-                        n = Convert.ToInt32(line.N.val);
+                        n = Convert.ToInt32(line.N);
 
                         if (n == 1) { day = 0; } else { day = 1; } // if a country includes only one city day = 0
                         list = new Country[n];
@@ -41,7 +40,7 @@ namespace Coins
 
                         foreach (CountryData country in line.Countries)
                         {
-                            list[k] = new Country(country.name, Convert.ToInt32(country.X1.val), Convert.ToInt32(country.Y1.val), Convert.ToInt32(country.X2.val), Convert.ToInt32(country.Y2.val));//the array of countries
+                            list[k] = new Country(country.name, country.X1, country.Y1, country.X2, country.Y2);//the array of countries
                             Init(grid, list[k], k, n);
                             k++;
                         }
@@ -192,14 +191,28 @@ namespace Coins
                         while (line != "0")
                         {
                             lineNumber++;
-                            InputData data = new InputData
+                            InputData data = new InputData();
+                            if (!int.TryParse(line, out countryNum))
                             {
-                                lineNumber = lineNumber,
-                                N = new Variable() { isValid = int.TryParse(line, out countryNum) , val = line },
-                                Countries = new List<CountryData> { }
-                            };
+                                throw new Exception(
+                                    $"Country count \"{line}\" should be in \"int\" format and in the interval [1;20]" +
+                                    $"\nError line number is {lineNumber}");
+                            }
+                            else
+                            {
+                                if (Convert.ToInt32(line) >=1 && Convert.ToInt32(line) <= 20)
+                                    data.N = Convert.ToInt32(line);
+                                else
+                                {
+                                    throw new Exception(
+                                        $"Country count \"{line}\" should be in the interval [1;20]" +
+                                        $"\nError line number is {lineNumber}");
+                                }
+                            }
+                            data.Countries = new List<CountryData> { };
+                            
 
-                            for (int i = 0; i < Convert.ToInt32(data.N.val); i++)
+                            for (int i = 0; i < Convert.ToInt32(data.N); i++)
                             {
                                 string stLine = reader.ReadLine();
                                 if (stLine == null)
@@ -212,7 +225,7 @@ namespace Coins
                                 string[] str = stLine.Split(' ');
                                 if (str.Length == 1)
                                     throw new IndexOutOfRangeException(
-                                        $"Country count \"{Convert.ToInt32(data.N.val)}\" don't equals to the number of countries at the bottom of the error line"
+                                        $"Country count \"{Convert.ToInt32(data.N)}\" don't equals to the number of countries at the bottom of the error line"
                                         + $"\nError line number is {lineNumber-i}");
                                 lineNumber++;
                                 if (str.Length >= 2 && str.Length <= 4)
@@ -223,15 +236,91 @@ namespace Coins
                                     throw new IndexOutOfRangeException(
                                         $"The country (\"{str[0]}\") have more than 4 coordinates. Please type only 4."
                                         + $"\nError line number is {lineNumber}");
-                                CountryData countryData = new CountryData
+
+                                CountryData countryData = new CountryData();
+
+                                #region Check the validity of the country name and coordinates - x1,x2,y1,y2
+
+                                if (string.IsNullOrEmpty(str[0]))
+                                    throw new NullReferenceException("Country name is null or empty. " + $"\nError line number is {lineNumber}");
+                                else
                                 {
-                                    lineNumber = lineNumber,
-                                    name = str[0],
-                                    X1 = new Variable() { isValid = int.TryParse(str[1], out x1), val = str[1] },
-                                    Y1 = new Variable() { isValid = int.TryParse(str[2], out y1), val = str[2] },
-                                    X2 = new Variable() { isValid = int.TryParse(str[3], out x2), val = str[3] },
-                                    Y2 = new Variable() { isValid = int.TryParse(str[4], out y2), val = str[4] }
-                                };
+                                    countryData.name = str[0];
+                                }
+
+                                if (!int.TryParse(str[1], out x1))
+                                {
+                                    throw new Exception(
+                                        $"The coordinate of country \"{str[0]}\" is \"{str[1]}\" should be in \"int\" format and in the interval [1;10]" +
+                                        $"\nError line number is {lineNumber}");
+                                }
+                                else
+                                {
+                                    if (Convert.ToInt32(str[1]) >= 1 && Convert.ToInt32(str[1]) <= 10)
+                                        countryData.X1 = Convert.ToInt32(str[1]);
+                                    else
+                                    {
+                                        throw new Exception(
+                                            $"The coordinate of country \"{str[0]}\" is \"{str[1]}\" should be in the interval [1;10]" +
+                                            $"\nError line number is {lineNumber}");
+                                    }
+                                }
+
+                                if (!int.TryParse(str[2], out y1))
+                                {
+                                    throw new Exception(
+                                        $"The coordinate of country \"{str[0]}\" is \"{str[2]}\" should be in \"int\" format and in the interval [1;10]" +
+                                        $"\nError line number is {lineNumber}");
+                                }
+                                else
+                                {
+                                    if (Convert.ToInt32(str[2]) >= 1 && Convert.ToInt32(str[2]) <= 10)
+                                        countryData.Y1 = Convert.ToInt32(str[2]);
+                                    else
+                                    {
+                                        throw new Exception(
+                                            $"The coordinate of country \"{str[0]}\" is \"{str[2]}\" should be in the interval [1;10]" +
+                                            $"\nError line number is {lineNumber}");
+                                    }
+                                }
+
+                                if (!int.TryParse(str[3], out x2))
+                                {
+                                    throw new Exception(
+                                        $"The coordinate of country \"{str[0]}\" is \"{str[3]}\" should be in \"int\" format and in the interval [1;10]" +
+                                        $"\nError line number is {lineNumber}");
+                                }
+                                else
+                                {
+                                    if (Convert.ToInt32(str[3]) >= 1 && Convert.ToInt32(str[3]) <= 10)
+                                        countryData.X2 = Convert.ToInt32(str[3]);
+                                    else
+                                    {
+                                        throw new Exception(
+                                            $"The coordinate of country \"{str[0]}\" is \"{str[3]}\" should be in the interval [1;10]" +
+                                            $"\nError line number is {lineNumber}");
+                                    }
+                                }
+
+                                if (!int.TryParse(str[4], out y2))
+                                {
+                                    throw new Exception(
+                                        $"The coordinate of country \"{str[0]}\" is \"{str[4]}\" should be in \"int\" format and in the interval [1;10]" +
+                                        $"\nError line number is {lineNumber}");
+                                }
+                                else
+                                {
+                                    if (Convert.ToInt32(str[4]) >= 1 && Convert.ToInt32(str[4]) <= 10)
+                                        countryData.Y2 = Convert.ToInt32(str[4]);
+                                    else
+                                    {
+                                        throw new Exception(
+                                            $"The coordinate of country \"{str[0]}\" is \"{str[4]}\" should be in the interval [1;10]" +
+                                            $"\nError line number is {lineNumber}");
+                                    }
+                                }
+                                #endregion
+
                                 data.Countries.Add(countryData);
                             }
 
@@ -243,14 +332,14 @@ namespace Coins
                                     $"\nError line number is {lineNumber + 1}");
                             if (!int.TryParse(line, out countryNum))
                                 throw new IndexOutOfRangeException(
-                                    $"Country count \"{Convert.ToInt32(data.N.val)}\" don't equals to the number of countries at the bottom of the error line"
-                                    + $"\nError line number is {lineNumber - Convert.ToInt32(data.N.val)}");
+                                    $"Country count \"{Convert.ToInt32(data.N)}\" don't equals to the number of countries at the bottom of the error line"
+                                    + $"\nError line number is {lineNumber - Convert.ToInt32(data.N)}");
                         }
                     }
                 }
                 catch (Exception Ex)
                 {
-                    Console.WriteLine("Invalid input.txt file. Check it.\n" + Ex.Message);
+                    Console.WriteLine(Ex.Message);
                     Console.ReadLine();
                     list.Clear();
                 }
